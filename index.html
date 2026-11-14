@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LIGHT LAB | 논리 회로 설계 프로젝트 평가</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon">⚡</span><span><strong>LIGHT LAB</strong><small>이산 수학 · 부울 함수와 논리 회로</small></span></div>
+  <div class="top-center"><span class="lesson-badge">2026 평가도구 · [12이수03-04]</span><label>모둠 코드 <input id="teamCode" maxlength="32" placeholder="예: 2학년-3모둠" autocomplete="off"/></label></div>
+  <div class="top-actions"><button id="helpBtn" class="btn ghost">? 사용법</button><button id="saveBtn" class="btn ghost">회로 저장</button><button id="loadBtn" class="btn ghost">불러오기</button><input type="file" id="fileInput" accept=".json,application/json" hidden/><button id="exportBtn" class="btn accent">평가 기록 내려받기</button></div>
+</header>
+<div class="layout">
+  <aside class="palette">
+    <div class="sidebar-title">부품 도구상자 <span>클릭 · 끌어놓기</span></div>
+    <section class="tool-section"><h3>입력 장치</h3><p class="tool-hint">캔버스에 A, B, C 스위치가 준비되어 있어요.</p><div class="tool-guide"><span class="guide-signal on"></span> 1 = ON / 참<br/><span class="guide-signal off"></span> 0 = OFF / 거짓</div></section>
+    <section class="tool-section"><h3>기본 논리 게이트</h3>
+      <div class="gate-item" draggable="true" data-type="AND" role="button" tabindex="0"><span class="gate-symbol">&amp;</span><span><b>AND</b><small>모두 참 → 1</small></span><span class="plus">＋</span></div>
+      <div class="gate-item" draggable="true" data-type="OR" role="button" tabindex="0"><span class="gate-symbol">≥1</span><span><b>OR</b><small>하나 이상 참 → 1</small></span><span class="plus">＋</span></div>
+      <div class="gate-item" draggable="true" data-type="NOT" role="button" tabindex="0"><span class="gate-symbol">¬</span><span><b>NOT</b><small>반대로 바꿈</small></span><span class="plus">＋</span></div>
+    </section>
+    <section class="tool-section"><h3>확장 논리 게이트</h3>
+      <div class="gate-item" draggable="true" data-type="NAND" role="button" tabindex="0"><span class="gate-symbol">⊼</span><span><b>NAND</b><small>AND의 부정</small></span><span class="plus">＋</span></div>
+      <div class="gate-item" draggable="true" data-type="NOR" role="button" tabindex="0"><span class="gate-symbol">⊽</span><span><b>NOR</b><small>OR의 부정</small></span><span class="plus">＋</span></div>
+      <div class="gate-item" draggable="true" data-type="XOR" role="button" tabindex="0"><span class="gate-symbol">⊕</span><span><b>XOR</b><small>서로 다르면 1</small></span><span class="plus">＋</span></div>
+    </section>
+    <section class="tool-section" id="connectionHelp"><h3>연결하는 방법</h3><ol class="tiny-steps"><li>왼쪽 게이트를 캔버스에 추가</li><li>출력 포트 ● 를 클릭</li><li>연결할 입력 포트 ● 를 클릭</li><li>스위치를 눌러 불빛 확인</li><li>연결선을 클릭하면 삭제</li></ol><div id="connectPrompt" class="connect-prompt">연결할 출력을 선택하세요.</div></section>
+    <div class="offline-label">🔒 서버 전송 없음 · 현재 브라우저에서 실행</div>
+  </aside>
+  <main class="workspace">
+    <div class="workspace-bar"><div><b>회로 설계 캔버스</b><span class="muted">드래그하여 이동 · 포트 클릭으로 배선</span></div><div class="bar-actions"><button id="undoBtn" class="btn minimal" title="되돌리기">↶ 되돌리기</button><button id="removeBtn" class="btn minimal">선택 삭제</button><button id="resetBtn" class="btn minimal danger">회로 초기화</button></div></div>
+    <div class="canvas-scroller" id="scroller"><div class="circuit-board" id="board"><svg id="wires" width="1280" height="690" viewBox="0 0 1280 690" aria-label="논리 회로 연결선"></svg><div id="nodeLayer"></div><div class="board-watermark">LIGHT LAB <span>LOGIC CIRCUIT WORKSPACE</span></div><div class="canvas-tip" id="canvasTip">입력 ● → 출력 ●이 아니라, <b>출력 ●을 먼저 클릭</b>하고 목적지 입력 ●을 눌러요.</div></div></div>
+    <div class="bottom-strip"><div class="live-status"><span id="led" class="live-led"></span><div><b id="liveText">전구: 연결 안 됨</b><small id="liveDetail">입력 조합을 확인하세요.</small></div></div><div class="bottom-actions"><button id="exprBtn" class="btn minimal">현재 논리식 보기</button><button id="testBtn" class="btn strong">8가지 조건 검증하기</button></div></div>
+  </main>
+  <aside class="inspector"><div class="side-heading">수행평가 미션 <span>PROJECT</span></div><label class="field-label" for="missionSelect">미션 선택</label><select id="missionSelect"><option value="AND">01 · AND 원리 확인</option><option value="OR">02 · OR 원리 확인</option><option value="NOT">03 · NOT 원리 확인</option><option value="SMART" selected>04 · 스마트 조명 설계 (평가)</option></select><div class="mission-box"><span id="missionType">최종 프로젝트</span><h2 id="missionTitle">전시관 스마트 조명</h2><p id="missionDescription">관람객을 감지하거나 관리자가 수동으로 켜면 조명이 켜져야 합니다. 점검 모드라면 항상 꺼져야 해요.</p><div id="missionConditions" class="conditions"></div></div>
+    <section class="side-section"><h3>입력 스위치</h3><div class="switch-row"><div><b>A</b><small>관람객 감지</small></div><button id="switchA" class="switch-control" aria-label="A 스위치 전환" aria-pressed="false"><span></span></button></div><div class="switch-row"><div><b>B</b><small>관리자 수동 점등</small></div><button id="switchB" class="switch-control" aria-label="B 스위치 전환" aria-pressed="false"><span></span></button></div><div class="switch-row"><div><b>C</b><small>점검 모드</small></div><button id="switchC" class="switch-control" aria-label="C 스위치 전환" aria-pressed="false"><span></span></button></div></section>
+    <section class="side-section"><h3>검증 결과 <span id="attemptLabel" class="attempt-label">시도 0회</span></h3><div class="score-line"><strong id="testScore">미검증</strong><span id="testBadge">전체 조건 검증 전</span></div><div id="tableArea" class="test-table-wrap"><p class="empty-msg">회로를 만든 뒤 검증 버튼을 누르면 각 입력에 대한 실제 출력과 목표 출력을 비교해 줍니다.</p></div><div id="feedback" class="feedback"></div></section>
+    <section class="side-section"><h3>개인 성찰 기록</h3><label for="reflection" class="field-label">내가 수정한 오개념과 이유를 적어 보세요.</label><textarea id="reflection" rows="4" placeholder="예: 처음에는 OR를 '정확히 하나만 참'으로 생각했지만, 두 입력이 모두 1일 때도 출력이 1이라는 것을 확인했다."></textarea><div class="mini-note">정답 여부뿐 아니라 수정 과정과 설명을 함께 평가합니다.</div></section>
+    <div class="side-footer"><button id="csvBtn" class="btn ghost full">검증 기록 CSV</button><button id="printBtn" class="btn ghost full">현재 화면 인쇄</button></div>
+  </aside>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<dialog id="helpDialog"><div class="dialog-head"><h2>LIGHT LAB 사용법</h2><button id="closeHelp" class="btn minimal" aria-label="닫기">✕</button></div><div class="dialog-body"><p><b>① 부품 배치</b> 왼쪽 게이트를 클릭하거나 캔버스로 끌어다 놓으세요. A·B·C 스위치와 전구는 기본으로 있습니다.</p><p><b>② 배선</b> 스위치 또는 게이트 오른쪽 출력 ●을 클릭하고, 다음 게이트나 전구의 왼쪽 입력 ●을 클릭합니다. 기존 입력 연결은 새 선으로 교체됩니다.</p><p><b>③ 실험</b> 스위치를 눌러 0/1을 바꾸면 전구가 즉시 반응합니다. 파란 선은 1, 회색 선은 0, 점선은 연결되지 않았음을 나타냅니다.</p><p><b>④ 평가</b> 8가지 조건 검증을 눌러 문제의 요구 사항과 회로를 비교하세요. 오류를 수정한 뒤 다시 검사합니다. 검증 결과와 시도 횟수가 저장됩니다.</p><p><b>⑤ 제출</b> '평가 기록 내려받기'로 JSON 원본을 저장하고, '검증 기록 CSV'로 시도 내역을 내보냅니다. 파일은 자동 업로드되지 않으니 교사의 지시에 따라 제출하세요.</p><p class="dialog-note">주의: 이 도구는 전기 회로의 실제 전류/전압을 계산하는 것이 아니라 논리값 0/1을 모델링합니다. 자동 검증은 정답의 한 근거이며, 최종 평가는 설명·성찰·루브릭을 함께 사용합니다.</p></div></dialog>
+<script src="app.js"></script>
+</body>
+</html>
